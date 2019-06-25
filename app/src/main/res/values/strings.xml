@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">My First Android</string>
+    <string name="str_main_shanghai">上海</string>
+    <string name="str_main_sichuan">四川</string>
 </resources>
