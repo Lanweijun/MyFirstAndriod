@@ -10,7 +10,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-@ViewInject(mianlayoutid = R.layout.activity_main)
+@ViewInject(mainlayoutid = R.layout.activity_main)
 public class MainActivity extends BaseActivity {
 
     @BindView(R.id.fac_main_home)
@@ -24,9 +24,14 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.rb_main_sichuan)
     RadioButton rbMainSichuan;
 
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void afterBindView() {
+
     }
 
     @OnClick(R.id.fac_main_home)

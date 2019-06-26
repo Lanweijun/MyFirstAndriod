@@ -4,64 +4,84 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.VideoView;
+
+import com.example.myfirstandroid.mvp.ISplashActivityContract;
 
 import java.io.File;
 
-public class SplashActivity extends AppCompatActivity {
+import butterknife.BindView;
 
-    private FullScreenVideoView mVideoView;
-    private TextView mTvTimer;
-    private CustomCountDownTimer timer;
+@ViewInject(mainlayoutid = R.layout.activity_splash)
+public class SplashActivity extends BaseActivity implements ISplashActivityContract.Iview {
+
+    @BindView(R.id.vv_play)
+    FullScreenVideoView vvPlay;
+    @BindView(R.id.tv_splash_timer)
+    TextView tvSplashTimer;
+    private ISplashActivityContract.IPresenter timerPresenter;
+//
+//    @Override
+//    protected void onCreate(@Nullable Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//
+//        //把初始化 Timer及相关内容抽取到 Presenter层种
+////        initTimer();
+//
+//        //ctrl + alt + f; 抽取
+//
+//    }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
-        mVideoView = (FullScreenVideoView) findViewById(R.id.vv_play);
-        mTvTimer = (TextView)findViewById(R.id.tv_splash_timer);
-        mTvTimer.setOnClickListener(new View.OnClickListener() {
+    public void afterBindView() {
+        initTimerPresenter();
+        initListener();
+        initVideo();
+    }
+
+    private void initTimerPresenter() {
+        timerPresenter = new SplashTimerPresenter(this);
+        timerPresenter.initTimer();
+    }
+
+
+
+    private void initVideo() {
+        vvPlay.setVideoURI(Uri.parse("android.resource://" + getPackageName() + File.separator + R.raw.splash));
+    }
+
+    private void initListener() {
+        tvSplashTimer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               startActivity(new Intent(SplashActivity.this,MainActivity.class));
+                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                finish();
             }
         });
-        mVideoView.setVideoURI(Uri.parse("android.resource://"+getPackageName() + File.separator + R.raw.splash));
-        mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+        vvPlay.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
                 mp.start();
             }
         });
-        mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        vvPlay.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 mp.start();
             }
         });
+    }
 
-        timer = new CustomCountDownTimer(5, new CustomCountDownTimer.ICountDownHandler() {
-            @Override
-            public void onTicker(int time) {
-                mTvTimer.setText(time + "秒");
-            }
 
-            @Override
-            public void onFinish() {
-                mTvTimer.setText("跳过");
-            }
-        });
-        timer.start();
+    @Override
+    public void setTvTimer(String s) {
+        tvSplashTimer.setText(s);
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        timer.cancel();
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
